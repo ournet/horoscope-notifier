@@ -1,14 +1,11 @@
 {
   "name": "horoscope-notifier",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Ournet horoscope notifier app",
   "main": "./lib/app.js",
   "scripts": {
     "start": "node ./lib/app",
-    "test": "mocha",
-    "preversion": "npm run test",
-    "postversion": "git push --follow-tags",
-    "prepublish": "npm run test"
+    "test": "mocha"
   },
   "engines": {
     "node": ">=4.0.0"
@@ -35,9 +32,9 @@
     "bluebird": "^3.4.7",
     "dotenv": "^4.0.0",
     "moment": "^2.17.1",
-    "ournet.links": "^0.2.3",
+    "ournet.links": "^0.2.4",
     "ournet.logger": "^0.1.0",
-    "ournet.web.data": "^0.1.2",
+    "ournet.web.data": "^0.1.4",
     "request": "^2.79.0"
   }
 }

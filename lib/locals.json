@@ -1,5 +1,8 @@
 {
   "ro": {
     "today_horoscope": "Horoscopul zilei"
+  },
+  "ru": {
+    "today_horoscope": "Ежедневный гороскоп"
   }
 }
