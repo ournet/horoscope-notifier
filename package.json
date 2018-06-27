@@ -1,14 +1,23 @@
 {
   "name": "horoscope-notifier",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "Ournet horoscope notifier app",
   "main": "./lib/app.js",
   "scripts": {
     "start": "node ./lib/app",
-    "test": "mocha"
+    "pretest": "npm run clean && npm run tsc",
+    "test": "ava --no-cache --verbose lib/**/*.test.js",
+    "posttest": "npm run clean-test-code",
+    "tsc": "tsc",
+    "tscw": "tsc -w",
+    "preversion": "npm run tsc",
+    "postversion": "git push --follow-tags",
+    "prepublishOnly": "npm run tsc && npm run clean-test-code",
+    "clean": "rimraf ./lib && rimraf ./types",
+    "clean-test-code": "rimraf ./lib/**/*.test.js && rimraf ./types/**/*.test.d.ts"
   },
   "engines": {
-    "node": ">=4.0.0"
+    "node": ">=8.0.0"
   },
   "repository": {
     "type": "git",
@@ -26,15 +35,18 @@
   },
   "homepage": "https://github.com/Ournet/horoscope-notifier#readme",
   "devDependencies": {
-    "mocha": "^3.2.0"
+    "@types/node": "latest",
+    "@types/request": "^2.47.1",
+    "ava": "^0.23.0",
+    "rimraf": "^2.6.2",
+    "typescript": "latest"
   },
   "dependencies": {
-    "bluebird": "^3.4.7",
     "dotenv": "^4.0.0",
     "moment": "^2.17.1",
-    "ournet.links": "^0.2.4",
+    "ournet.links": "^0.4.3",
     "ournet.logger": "^0.1.0",
     "ournet.web.data": "^0.1.4",
-    "request": "^2.79.0"
+    "request": "^2.87.0"
   }
 }
