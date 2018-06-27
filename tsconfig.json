@@ -9,8 +9,7 @@
         "preserveConstEnums": true,
         "sourceMap": false,
         "moduleResolution": "node",
-        "declaration": true,
-        "declarationDir": "types",
+        "declaration": false,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "allowJs": false
