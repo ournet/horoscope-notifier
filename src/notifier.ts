@@ -2,10 +2,12 @@
 
 import * as request from 'request';
 import * as Links from 'ournet.links';
-import * as Data from './data';
 import * as moment from 'moment';
 const Locales = require('../locales.json');
 import logger from './logger';
+import { createQueryApiClient, executeApiClient } from './data';
+import { HoroscopeReport, HoroscopeReportStringFields } from '@ournet/api-client';
+import { HoroscopesHelper, HoroscopeSign } from '@ournet/horoscopes-domain';
 
 function sendNotification(apiKey: string, appId: string, notification: Notification, isTest: boolean): Promise<SendResult> {
 
@@ -63,23 +65,19 @@ export async function send(apiKey: string, appId: string, country: string, lang:
 	const currentDate = moment().locale(lang);
 	const currentDayPeriod = 'D' + currentDate.format('YYYYMMDD');
 
-	const data = await Data.get({
-		reports: ['horoscopeReports', {
-			where: JSON.stringify({ lang: lang, period: currentDayPeriod }),
-			order: 'sign',
-			limit: 20
-		}],
-		signs: ['horoscopeSignsNames']
-	});
+	const api = createQueryApiClient<{ reports: HoroscopeReport[] }>();
 
-	if (data.errors) {
-		throw new Error('OURNET API error');
-	}
+	const ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+		.map(sign => HoroscopesHelper.createReportId(currentDayPeriod, lang, sign as HoroscopeSign));
+
+	api.horoscopesReportsByIds('reports', { fields: HoroscopeReportStringFields }, { ids });
+
+	const data = await executeApiClient(api);
 
 	let sumRecipients = 0;
 
-	const notifications = (<any[]>data.reports).map<Notification>(report => {
-		const sign = data.signs[report.sign][lang];
+	const notifications = (data.reports).map<Notification>(report => {
+		const sign = HoroscopesHelper.getSignName(report.sign as HoroscopeSign, lang);
 		const notification: Notification = {
 			lang: lang,
 			url: host + links.horoscope.sign(sign.slug, { utm_source: 'horo-notifier-app', utm_campaign: 'horo-notifications', utm_medium: 'push-notification' }),

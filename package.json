@@ -35,6 +35,7 @@
   },
   "homepage": "https://github.com/Ournet/horoscope-notifier#readme",
   "devDependencies": {
+    "@types/moment": "^2.13.0",
     "@types/node": "latest",
     "@types/request": "^2.47.1",
     "ava": "^0.23.0",
@@ -44,9 +45,7 @@
   "dependencies": {
     "dotenv": "^4.0.0",
     "moment": "^2.17.1",
-    "ournet.links": "^0.4.3",
     "ournet.logger": "^0.1.0",
-    "ournet.web.data": "^0.1.4",
     "request": "^2.87.0"
   }
 }
