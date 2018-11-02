@@ -5,6 +5,8 @@ yarn unlink @ournet/api-client
 yarn unlink @ournet/horoscopes-domain
 yarn unlink ournet.links
 
+yarn upgrade --latest
+
 yarn add @ournet/domain
 yarn add @ournet/api-client
 yarn add @ournet/horoscopes-domain
