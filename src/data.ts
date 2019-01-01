@@ -2,7 +2,7 @@ import { GraphQLQueryExecutor, OurnetQueryApi, OurnetMutationApi } from '@ournet
 
 const executor = new GraphQLQueryExecutor(process.env.OURNET_API_HOST || 'http://ournetapi.com/graphql',
     {
-        authorization: `Bearer ${process.env.OURNET_API_KEY}`,
+        authorization: `Key ${process.env.OURNET_API_KEY}`,
         'Content-Type': 'application/json'
     });
 
