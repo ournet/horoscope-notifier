@@ -26,14 +26,10 @@ if (!API_KEY || !APP_ID || !COUNTRY || !LANG) {
 
 const IS_TEST = ['true', '1', 'True'].indexOf(process.env.IS_TEST) > -1;
 
-const WEB_UTM = { utm_source: 'horo-notifier-app', utm_campaign: 'web-horo-notification', utm_medium: 'push-notification' };
-const APP_UTM = { utm_source: 'horo-notifier-app', utm_campaign: 'app-horo-notification', utm_medium: 'push-notification' };
-
 function start() {
-	const utm = IS_APP ? APP_UTM : WEB_UTM;
 	const country = getCountryByLang(LANG);
 	// console.log(API_KEY, APP_ID, country, LANG, IS_TEST, utm);
-	return notifier.send(API_KEY, APP_ID, country, LANG, IS_TEST, utm);
+	return notifier.send(API_KEY, APP_ID, country, LANG, IS_TEST, IS_APP ? 'app' : 'web');
 }
 
 logger.warn('start');

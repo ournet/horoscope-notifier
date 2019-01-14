@@ -8,7 +8,6 @@ import logger from './logger';
 import { createQueryApiClient, executeApiClient } from './data';
 import { HoroscopeReport, HoroscopeReportStringFields } from '@ournet/api-client';
 import { HoroscopesHelper, HoroscopeSign } from '@ournet/horoscopes-domain';
-import { Dictionary } from '@ournet/domain';
 
 function sendNotification(apiKey: string, appId: string, notification: Notification, isTest: boolean): Promise<SendResult> {
 
@@ -26,11 +25,7 @@ function sendNotification(apiKey: string, appId: string, notification: Notificat
 	if (isTest) {
 		body.included_segments = ['Test Users'];
 	} else {
-		body.filters = [
-			{ field: 'last_session', relation: '>', value: 12 },
-			{ operator: 'AND' },
-			{ field: 'tag', key: 'zodiac-sign', relation: '=', value: notification.signId }
-		];
+		body.filters = notification.filters;
 	}
 
 	body.contents.en =
@@ -58,7 +53,9 @@ function sendNotification(apiKey: string, appId: string, notification: Notificat
 	});
 }
 
-export async function send(apiKey: string, appId: string, country: string, lang: string, isTest: boolean, utmParams: Dictionary<string>) {
+export type TargetPlatform = 'app' | 'web';
+
+export async function send(apiKey: string, appId: string, country: string, lang: string, isTest: boolean, platform: TargetPlatform) {
 
 	const links = Links.sitemap(lang);
 	const host = 'https://' + Links.getHost('horoscope', country);
@@ -78,14 +75,28 @@ export async function send(apiKey: string, appId: string, country: string, lang:
 
 	let sumRecipients = 0;
 
+	const utmParams = { utm_source: 'horo-notifier-app', utm_campaign: `${platform}-horo-notification`, utm_medium: 'push-notification' };
+
 	const notifications = (data.reports).map<Notification>(report => {
+		const filters = [
+			{ field: 'last_session', relation: '>', value: 12 },
+			{ operator: 'AND' },
+			{ field: 'tag', key: 'zodiac-sign', relation: '=', value: report.sign.toString() },
+		];
+
+		if (platform === 'app') {
+			filters.push({ operator: 'AND' });
+			filters.push({ field: 'tag', key: 'lang', relation: '=', value: lang });
+		}
+
 		const sign = HoroscopesHelper.getSignName(report.sign as HoroscopeSign, lang);
 		const notification: Notification = {
 			lang: lang,
 			url: host + links.horoscope.sign(sign.slug, utmParams),
 			title: sign.name + ': ' + locales.today_horoscope,
 			content: report.text.split(/\n+/g)[0].substr(0, 200).trim() + '...',
-			signId: report.sign
+			signId: report.sign,
+			filters,
 		};
 
 		return notification;
@@ -106,6 +117,7 @@ type Notification = {
 	title: string
 	content: string
 	signId: number
+	filters: any[]
 }
 
 type SendResult = {
