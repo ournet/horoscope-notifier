@@ -8,6 +8,7 @@ import logger from './logger';
 import { createQueryApiClient, executeApiClient } from './data';
 import { HoroscopeReport, HoroscopeReportStringFields } from '@ournet/api-client';
 import { HoroscopesHelper, HoroscopeSign } from '@ournet/horoscopes-domain';
+import { Dictionary } from '@ournet/domain';
 
 function sendNotification(apiKey: string, appId: string, notification: Notification, isTest: boolean): Promise<SendResult> {
 
@@ -16,6 +17,7 @@ function sendNotification(apiKey: string, appId: string, notification: Notificat
 		contents: {},
 		headings: {},
 		url: notification.url,
+		android_accent_color: 'ffc84697',
 		// chrome_web_icon: '',
 		// in seconds
 		ttl: 60 * 60 * 12
@@ -56,7 +58,7 @@ function sendNotification(apiKey: string, appId: string, notification: Notificat
 	});
 }
 
-export async function send(apiKey: string, appId: string, country: string, lang: string, isTest: boolean) {
+export async function send(apiKey: string, appId: string, country: string, lang: string, isTest: boolean, utmParams: Dictionary<string>) {
 
 	const links = Links.sitemap(lang);
 	const host = 'https://' + Links.getHost('horoscope', country);
@@ -80,7 +82,7 @@ export async function send(apiKey: string, appId: string, country: string, lang:
 		const sign = HoroscopesHelper.getSignName(report.sign as HoroscopeSign, lang);
 		const notification: Notification = {
 			lang: lang,
-			url: host + links.horoscope.sign(sign.slug, { utm_source: 'horo-notifier-app', utm_campaign: 'horo-notifications', utm_medium: 'push-notification' }),
+			url: host + links.horoscope.sign(sign.slug, utmParams),
 			title: sign.name + ': ' + locales.today_horoscope,
 			content: report.text.split(/\n+/g)[0].substr(0, 200).trim() + '...',
 			signId: report.sign

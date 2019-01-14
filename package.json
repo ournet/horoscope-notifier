@@ -5,16 +5,16 @@
   "main": "./lib/app.js",
   "scripts": {
     "start": "node ./lib/app",
-    "pretest": "npm run clean && npm run tsc",
+    "pretest": "yarn clean && yarn tsc",
     "test": "ava --no-cache --verbose lib/**/*.test.js",
-    "posttest": "npm run clean-test-code",
+    "posttest": "yarn clean-test-code",
     "tsc": "tsc",
     "tscw": "tsc -w",
-    "preversion": "npm run tsc",
+    "preversion": "yarn tsc",
     "postversion": "git push --follow-tags",
-    "prepublishOnly": "npm run tsc && npm run clean-test-code",
-    "clean": "rimraf ./lib && rimraf ./types",
-    "clean-test-code": "rimraf ./lib/**/*.test.js && rimraf ./types/**/*.test.d.ts"
+    "prepublishOnly": "yarn tsc && yarn clean-test-code",
+    "clean": "rimraf ./lib",
+    "clean-test-code": "rimraf ./lib/**/*.test.js"
   },
   "engines": {
     "node": ">=8.0.0"
