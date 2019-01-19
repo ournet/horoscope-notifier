@@ -2,9 +2,9 @@
   "name": "horoscope-notifier",
   "version": "0.2.0",
   "description": "Ournet horoscope notifier app",
-  "main": "./lib/app.js",
   "scripts": {
-    "start": "node ./lib/app",
+    "web-app": "node ./lib/web-app",
+    "mobile-app": "node ./lib/mobile-app",
     "pretest": "yarn clean && yarn tsc",
     "test": "ava --no-cache --verbose lib/**/*.test.js",
     "posttest": "yarn clean-test-code",
@@ -36,6 +36,7 @@
   "homepage": "https://github.com/Ournet/horoscope-notifier#readme",
   "devDependencies": {
     "@types/moment": "^2.13.0",
+    "@types/ms": "^0.7.30",
     "@types/node": "10.12.7",
     "@types/request": "^2.48.1",
     "ava": "^0.25.0",
@@ -48,6 +49,7 @@
     "@ournet/horoscopes-domain": "^0.1.1",
     "dotenv": "^6.1.0",
     "moment": "^2.17.1",
+    "ms": "^2.1.1",
     "ournet.links": "^0.4.6",
     "ournet.logger": "^0.1.0",
     "request": "^2.88.0"

@@ -8,6 +8,7 @@ import logger from './logger';
 import { createQueryApiClient, executeApiClient } from './data';
 import { HoroscopeReport, HoroscopeReportStringFields } from '@ournet/api-client';
 import { HoroscopesHelper, HoroscopeSign } from '@ournet/horoscopes-domain';
+import ms = require('ms');
 
 function sendNotification(apiKey: string, appId: string, notification: Notification, isTest: boolean): Promise<SendResult> {
 
@@ -16,10 +17,12 @@ function sendNotification(apiKey: string, appId: string, notification: Notificat
 		contents: {},
 		headings: {},
 		url: notification.url,
-		android_accent_color: 'ffc84697',
+		android_accent_color: notification.accentColor,
 		// chrome_web_icon: '',
 		// in seconds
-		ttl: 60 * 60 * 12
+		ttl: notification.ttl,
+		delayed_option: 'timezone',
+		delivery_time_of_day: '7:00AM',
 	};
 
 	if (isTest) {
@@ -78,25 +81,34 @@ export async function send(apiKey: string, appId: string, country: string, lang:
 	const utmParams = { utm_source: 'horo-notifier-app', utm_campaign: `${platform}-horo-notification`, utm_medium: 'push-notification' };
 
 	const notifications = (data.reports).map<Notification>(report => {
-		const filters = [
+		const filters: any[] = [
 			{ field: 'last_session', relation: '>', value: 12 },
 			{ operator: 'AND' },
-			{ field: 'tag', key: 'zodiac-sign', relation: '=', value: report.sign.toString() },
 		];
 
-		if (platform === 'app') {
+		const sign = HoroscopesHelper.getSignName(report.sign as HoroscopeSign, lang);
+		const accentColor = 'ffc84697';
+		let url: string;
+
+		if (platform === 'web') {
+			filters.push({ field: 'tag', key: 'zodiac-sign', relation: '=', value: report.sign.toString() });
+
+			url = host + links.horoscope.sign(sign.slug, utmParams)
+		} else {
+			filters.push({ field: 'tag', key: 'zodiacSign', relation: '=', value: report.sign.toString() });
 			filters.push({ operator: 'AND' });
 			filters.push({ field: 'tag', key: 'lang', relation: '=', value: lang });
 		}
 
-		const sign = HoroscopesHelper.getSignName(report.sign as HoroscopeSign, lang);
 		const notification: Notification = {
-			lang: lang,
-			url: host + links.horoscope.sign(sign.slug, utmParams),
+			lang,
+			url,
 			title: sign.name + ': ' + locales.today_horoscope,
 			content: report.text.split(/\n+/g)[0].substr(0, 200).trim() + '...',
 			signId: report.sign,
 			filters,
+			ttl: Math.floor(ms('6h') / 1000),
+			accentColor,
 		};
 
 		return notification;
@@ -113,11 +125,13 @@ export async function send(apiKey: string, appId: string, country: string, lang:
 
 type Notification = {
 	lang: string
-	url: string
+	url?: string
 	title: string
 	content: string
 	signId: number
 	filters: any[]
+	accentColor?: string
+	ttl: number
 }
 
 type SendResult = {
