@@ -56,7 +56,7 @@ function sendNotification(apiKey: string, appId: string, notification: Notificat
 	});
 }
 
-export type TargetPlatform = 'app' | 'web';
+export type TargetPlatform = 'mobile' | 'web';
 
 export async function send(apiKey: string, appId: string, country: string, lang: string, isTest: boolean, platform: TargetPlatform) {
 
